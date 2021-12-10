@@ -1,4 +1,5 @@
 <?php 
+	/* Cuisine Catagories*/
 	session_start();
 
 	include_once('connection/connect.php');
