@@ -12,18 +12,18 @@
 
         $comments = $query->fetchAll();
 
-        if(isset($_POST['title'], $_POST['comment'], $_POST['name'], $_POST['captcha'])){
+        if(isset($_POST['title'], $_POST['comment'], $_POST['name'])){
 
             $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING);
             $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
             $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
             $post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-            $captcha = filter_input(INPUT_POST, 'captcha', FILTER_VALIDATE_INT);
+            //$captcha = filter_input(INPUT_POST, 'captcha', FILTER_VALIDATE_INT);
 
-            if(empty($title) || empty($comment) || empty($name) || empty($captcha)){
+            if(empty($title) || empty($comment) || empty($name)){
                 $error = "All fields are required!";
             }
-            else if($captcha == $_SESSION['captcha']){
+            else{
                 $query = $db->prepare(" INSERT INTO comment (post_id, name, title, comments) VALUES (?, ?, ?, ?)");
 
                 $query->bindValue(1, $post_id);
@@ -35,9 +35,9 @@
                 header("Location: show.php?id=$post_id&$p");
                 
             }
-            else{
-                $error = "Captcha verification failed!";
-            }
+            // else{
+            //     $error = "Captcha verification failed!";
+            // }
         }
     }
 
@@ -51,7 +51,7 @@
         $post = $query3->fetch();
 
         $p = $post['slug'];
-
+        
         $query1 = $db->prepare("DELETE FROM comment WHERE comment_id=?");
         $query1->bindValue(1, $did);
 
@@ -63,7 +63,7 @@
 ?>
 
 <!DOCTYPE html>
-<html lang=en>
+<html lang="en">
 <head>
 	<meta charset="utf-8">
 	<title>Comments</title>
@@ -84,26 +84,14 @@
             <?php elseif(isset($_SESSION['login'])): ?>
                 <input type="hidden" name="name" value="<?= $_SESSION['login'] ?>" />
             <?php else: ?>
-                <input class="w3-input w3-animate-input" type="text" name="name" placeholder="Name" style="width:40%" value= "<?php
-                    if(isset($_POST['name']) && $captcha != $_SESSION['captcha']){
-                        echo $_POST['name']; 
-                    } ?>" /><br/>
+                <input class="w3-input w3-animate-input" type="text" name="name" placeholder="Name" style="width:40%" /><br/>
             <?php endif ?>
-            <input class="w3-input w3-animate-input" type="text" name="title" placeholder="Title" style="width:40%" value= "<?php
-                if(isset($_POST['title']) && $captcha != $_SESSION['captcha']){
-                    echo $_POST['title'];
-                } ?>" /><br/>
-            <input class="w3-input w3-border" name="comment" placeholder="Comment" value="<?php
-                if(isset($_POST['comment']) && $captcha != $_SESSION['captcha']){
-                    echo $_POST['comment']; 
-                } ?>" /><br />
-            <div>
-            <div>
+            <input class="w3-input w3-animate-input" type="text" name="title" placeholder="Title" style="width:40%" /><br/>
+            <input class="w3-input w3-border" name="comment" placeholder="Comment" /><br />
+            <!-- <div>
                 <input type="text" name="captcha" placeholder="Verify 6-digits number"/>
-                <label><?= $_SESSION['captcha'] ?></label>
-
-                <!-- <img src="captcha.php" alt="captcha"></img> -->
-            </div>
+                <img src="captcha.php" alt="j"></img>
+            </div> -->
             <br /><br />
             <input type="submit" name="submit" value="Post Comment" />
         </form>
