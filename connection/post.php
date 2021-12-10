@@ -64,7 +64,8 @@
         }
 
     }
-
+    
+/*slug func*/
     function slug($text){
         $text = preg_replace('~[^\\pL\d]+~u','-', $text);
         $text = trim($text, '-');
